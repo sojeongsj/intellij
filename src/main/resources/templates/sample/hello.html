@@ -3,12 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/test.css}">
 </head>
 <body>
 <h3>타임리프 템플릿 : spring el 테스트</h3>
 <hr>
 <h3 th:text="${message}"></h3> <!--th: 속성 이용하기 -->
+<ul>
+    <li th:each="str:${list}" th:text="${str}"></li>
+</ul>
+
+
+
 <h3>[[${message}]]</h3> <!-- 인라인 표기 -->
+<ul>
+    <th:block th:each="str,status:${list}">
+        <li>[[${str}]] - [[${status.index}]]</li>
+    </th:block>
+</ul>
+<hr>
+<h3>타임리프 링크 link 테스트</h3>
+<ul>
+    <li><a th:href="@{/spring(name='모모',age=24)}">go SPRING1</a></li>
+    <!-- 결과 http://localhost:8085/spring?name=%EB%AA%A8%EB%AA%A8&age=24
+         spring.html 없어서 오류-->
+
+    <li><a th:href="@{spring(name='모모',age=24)}">go SPRING2</a></li>
+    <!-- 결과 http://localhost:8085/sample/spring?name=%EB%AA%A8%EB%AA%A8&age=24-->
+
+    <li><a th:href="@{spring}">go SPRING3</a></li>
+    <!-- 결과 http://localhost:8085/sample/spring-->
+</ul>
 
 
 </body>

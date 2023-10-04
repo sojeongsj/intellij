@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.iclass.mvc.dto.Community;
 import org.iclass.mvc.dto.CommunityComments;
+import org.iclass.mvc.dto.PageRequestDTO;
+import org.iclass.mvc.dto.PageResponseDTO;
 import org.iclass.mvc.service.CommunityService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +22,24 @@ public class CommunityController {
 
     private final CommunityService service;
 
-    @GetMapping("/list")
+/*    @GetMapping("/list2")
     private void list(@RequestParam(defaultValue = "1")
                       int page, Model model) {
         model.addAttribute("list",service.pagelist(page).get("list"));
         model.addAttribute("paging",service.pagelist(page).get("paging"));
         model.addAttribute("today", LocalDate.now());
+    }*/
+
+    @GetMapping("/list")
+    private void list(PageRequestDTO pageRequestDTO, Model model){
+        PageResponseDTO responseDTO = service.listWithSearch(pageRequestDTO);
+
+        //list.html에 전달할 model 관련코드 작성하고 list.html 완성, 레이아웃 적용
+        log.info(">>>>>>>>DTO : {}" , pageRequestDTO);
+        model.addAttribute("list",responseDTO.getList());
+        model.addAttribute("currentPage",pageRequestDTO.getPage());
+        model.addAttribute("paging",responseDTO);
+
     }
 
     @PostMapping("/write")

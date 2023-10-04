@@ -10,5 +10,21 @@
 <hr>
 <h3>커뮤니티</h3>
 <a href="community/list">커뮤니티 목록</a>
+<hr>
+<div th:if="${session.member != null}">
+    <h3>로그아웃</h3>
+    <a href="member/logout">로그아웃</a>
+</div>
+<div th:if="${session.member == null}">
+    <h3>로그인</h3>
+    <a href="member/login">로그인</a>
+</div>
+
+<h3>타임리프 샘플</h3>
+<a href="sample/spring">go spring</a>
+<a href="sample/spring?name=momo&age=23">go spring2</a>
+<a href="sample/spring?title=하이&writer=momo">go spring3</a>
+
+
 </body>
 </html>

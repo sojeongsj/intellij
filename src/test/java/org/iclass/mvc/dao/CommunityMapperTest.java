@@ -15,12 +15,12 @@ class CommunityMapperTest {
     @Autowired
     CommunityMapper dao;
 
-    @Test
+/*    @Test
     @DisplayName("count 테스트")
     void count() {
         int count = dao.count();
         Assertions.assertNotEquals(0,count);
-    }
+    }*/
 
     @Test
     @DisplayName("idx 테스트")

@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xml:ns="https://www.thymleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}"
+>
+<!-- 이 페이지는 layout/basic.html 파일로 장식(decorate)됨. 레이아웃 프레임-->
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Spring</title>
 </head>
 <body>
 
+<!-- basic.html에서 정의된 layout.fragment="content"에 들어갈 내용-->
+<div layout:fragment="content">
+    <hr>
+    title : [[${community.title}]]
+    writer : [[${community.writer}]]
+    name : [[${name}]]
+    age : [[${age}]]
+</div>
+<!-- basic.html에서 정의된 layout:fragment="script" 에 들어갈 내용.
+th:inline="javascript" 는 타임리프 el 사용하기 위한 속성-->
+<script layout:fragment="script" th:inline="javascript">
+    const name = [[${name}]]
+    if (name)   //name이 0, undifined, null, '' 이면 false 아니면 true
+        alert(name+ "님 환영합니다")
+
+
+</script>
 </body>
 </html>

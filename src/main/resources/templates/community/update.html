@@ -1,79 +1,68 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" th:href="@{/css/community.css}">
+    <link rel="stylesheet" th:href="@{/css/read.css}">
 </head>
+<!-- 부트스트랩 css: 교재와 동일한 양식-->
+<!-- 타임리프 유틸리티 : java 클래스를 사용하도록 제공. 각각 객체에 맞는 메소드를 갖고있으며 그것을 잘 활용
+    #strings(String 클래스) #numbers #dates(Date,Timestamp 클래스)
+    #temporals(LocalDate, LocalDateTime 클래스)
+ -->
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    글 수정하기 - Update [[${dto.idx}]] 번
+                </div>
+                <div class="card-body">
+                    <form action="update" method="post">
+                        <input type="hidden" name="link" th:value="${pageRequestDTO.link}">
+                        <input type="hidden" name="ip" th:value="${#request.remoteAddr}">
+                        <input type="hidden" name="idx" th:value="${dto.idx}">
+
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text col-2">제목</span>
+                            <input th:if="${#strings.contains(dto.title, '[수정]')}" name="title" class="form-control" th:value="${dto.title}" readonly>
+
+                            <input th:unless="${#strings.contains(dto.title, '[수정]')}" name="title" class="form-control"  th:value="'[수정]' + ${dto.title}" readonly>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text col-2">내용</span>
+                            <textarea name="content" class="form-control" rows="15" style="resize: none">[[${dto.content}]]</textarea>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text col-2">작성자</span>
+                            <input name="writer" class="form-control" th:value="${dto.writer}" readonly>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text col-2">작성날짜</span>
+                            <input name="createdAt" class="form-control" th:value="${#dates.format(dto.createdAt,'yyyy-MM-dd')}" readonly>
+                        </div>
+                        <div class="my-4" th:with="link=${pageRequestDTO.link}">
+                            <!-- link 예시 : page=3&type=tc&keyword=hi 를 전달받아 목록과 수정 클릭 시 파라미터를 추가시킴-->
+                            <div class="float-end">
+                                <a th:href="|@{/community/list}?${link}|" class="text-decoration-none">
+                                    <!-- href="/community/list?page=3&type=tc&keyword=hi" -->
+                                    <button type="button" class="btn btn-primary">목록</button>
+                                </a>
+
+                                    <button type="submit" class="btn btn-secondary">수정</button>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <body>
-<main id="write">
-    <h3>북챗 :: 커뮤니티</h3>
-    <p>오늘 무슨 책을 읽으셨나요? </p>
-    <hr style="color:white;">
-    <form name="frm1" method="post" action="updateAction" >
-        <!--onsubmit="return isValid()" 방법도 있음.  -->
-        <input type="hidden" name="idx" value="${vo.idx }">
-        <input type="hidden" name="page" value="${page}">
-        <input type="hidden" name="ip" value="${pageContext.request.remoteAddr }">
-        <!-- 현재페이지 번호 전달 - 순서5) post 로 전달해야 하므로 hidden type으로 저장 -->
-        <table>
-            <tr><th>제목</th>
-                <td>
-                    <!-- 수정된 글은 제목 앞에 `[수정]` 문자열을 넣어줍니다.  -->
-                    <c:choose>
-                        <c:when  test="${fn:contains(vo.title,'[수정]') }">  <!-- title 에 `[수정]` 이 있으면 참 -->
-                            <input type="text" name="title" size="50" value="${vo.title }" readonly>
-                        </c:when>
-                        <c:otherwise>
-                            <input type="text" name="title" size="50" value="[수정]${vo.title }" readonly>
-                        </c:otherwise>
-                    </c:choose>
-                    <!-- readonly : 입력불가 -->
-                </td>
-            </tr>
-            <tr>
-                <th>작성자</th>
-                <td><input type="text" name="writer" size="50" value="${vo.writer }" disabled="disabled"></td>
-                <!-- disabled : 입력 불가 + 파리미터 전송 못함. -->
-            </tr>
-            <tr>
-                <th>작성 날짜</th> <!-- 수정할 값이 아니므로 화면에 표시만 합니다. -->
-                <td><c:out value="${vo.createdAt }"/></td>
-            </tr>
 
-            <tr><th>내용</th>  <!-- textarea 의 크기 : rows="30" cols="80" -->
-                <td>
-                    <textarea  rows="30" cols="80" name="content" required><c:out value="${vo.content }"/></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <button type="button" onclick="isValid()">저장</button>
-                    <!-- 유효성검사 후 자바스크립트에서 submit. (hrd_mvc2 프로젝트 유효성 검사 참고.)  -->
-                    <button type="reset">다시쓰기</button>
-                    <button type="button" onclick="location.href='list?page=${page}'">목록</button>
-                    <!-- 현재페이지 번호 전달 - 순서5) -->
-                </td>
-            </tr>
-        </table>
-    </form>
-</main>
-<script type="text/javascript">
-    function isValid(){
-        let result = true			//유효성 검사 결과 저장
-        const content = document.forms[0].content		//input 요소 지정
-        if(content.value == '') {
-            alert('글 내용 작성은 필수 입니다.')
-            result = false
-            content.focus()
-        }
-
-        if(result) {
-            document.forms[0].submit()
-        }
-    }
-    //유효성 검사를 위해서 저장 버튼 타입을 submit 으로 두는 방법도 있습니다.
-    //그럴 때는 form 태그에 onsubmit="return isValid()"    => isValid 함수 실행한 리턴이 true 일때만 submit 합니다.
-</script>
 </body>
 </html>

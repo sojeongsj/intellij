@@ -37,6 +37,7 @@ public class CommunityController {
         //list.html에 전달할 model 관련코드 작성하고 list.html 완성, 레이아웃 적용
         log.info(">>>>>>>>DTO : {}" , pageRequestDTO);
         model.addAttribute("list",responseDTO.getList());
+        model.addAttribute("pageRequestDTO",pageRequestDTO);
         model.addAttribute("currentPage",pageRequestDTO.getPage());
         model.addAttribute("paging",responseDTO);
 
@@ -59,12 +60,30 @@ public class CommunityController {
     }
 
     @GetMapping("/read")
-    public void read(long idx, @ModelAttribute("page")
-    int page, Model model) {
-        model.addAttribute("vo",service.selectByIdx(idx));
-        model.addAttribute("cmtlist",service.commentsList(idx));
+    public void read(PageRequestDTO pageRequestDTO,long idx,Model model) {
+        Community community = service.read(idx);
+        model.addAttribute("dto",community);
+    }
 
+    @GetMapping("/update")
+    public void updateview(PageRequestDTO pageRequestDTO,long idx,Model model){
+        Community community = service.read(idx);
+        model.addAttribute("dto",community);
+    }
 
+    @PostMapping("/update")
+    public String update(long idx, String title,String content, String ip,String link,
+                         RedirectAttributes re){
+        Community dto = Community.builder()
+                .idx(idx)
+                .title(title)
+                .content(content)
+                .ip(ip)
+                .build();
+        log.info(">>>>>>>>>link : {}", link);
+        service.update(dto);
+        re.addFlashAttribute("message","글 수정이 완료되었습니다.");
+        return "redirect:/community/list?"+link;
     }
 
     @PostMapping("/comments")
@@ -82,6 +101,13 @@ public class CommunityController {
         }
         //return "redirect:/community/read?page="+page+"&idx="+dto.getMref();
         return "redirect:/community/read"; //리다이렉트 애트리뷰트 사용하므로 쿼리스트링 사용X
+    }
+
+    @PostMapping("/delete")
+    public String delete(long idx,RedirectAttributes re){
+        service.delete(idx);
+        re.addFlashAttribute("message","글 삭제가 완료되었습니다.");
+        return "redirect:/community/list";
     }
 
 }

@@ -1,5 +1,7 @@
 package org.iclass.mvc.dto;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 
 
@@ -55,5 +57,32 @@ public class PageRequestDTO {
 		}
 	}
 
+	//글 읽기, 글 수정, 글 삭제 등에 페이지번호와 검색 파라미터를 url에 계속 데리고 다녀야 함
+	//이를 위해 문자열 생성 메소드 정의
+	private String link;	//url에 들어갈 파라미터 문자열
+
+	public String getLink(){
+		if(link==null){
+			StringBuilder builder = new StringBuilder();
+			builder.append("page="+this.page);
+			if(type != null && type.length()>0 && keyword!=null){
+				builder.append("&type="+type);
+				try {
+					builder.append("&keyword="+ URLEncoder.encode(keyword,"UTF-8"));
+					//키워드는 한글 등 다국어문자일 경우 인코딩이 필요함
+				} catch (UnsupportedEncodingException e){
+
+				}
+			}
+
+			if (from != null && to !=null){	//아직 UI에는 미구현한 상태
+				builder.append("&from="+from);
+				builder.append("&to="+to);
+			}
+			this.link= builder.toString();
+		}
+		return this.link;
+		//최종 link는 ex) page=3&type=tc&keyword=hi&from=2023-03-01&to=2023-03-31
+	}
 
 }

@@ -40,6 +40,8 @@ public class CommunityController {
         model.addAttribute("pageRequestDTO",pageRequestDTO);
         model.addAttribute("currentPage",pageRequestDTO.getPage());
         model.addAttribute("paging",responseDTO);
+        model.addAttribute("today", LocalDate.now());
+
 
     }
 
@@ -50,7 +52,7 @@ public class CommunityController {
         log.info("dto : {}",dto);
         service.insert(dto);
 
-        reAttr.addFlashAttribute("message","글 등록이 완료되었습니다.");
+        reAttr.addFlashAttribute("result","글 등록이 완료되었습니다.");
         return "redirect:/community/list";
     }
 
@@ -59,31 +61,25 @@ public class CommunityController {
         //글쓰기 GET 요청은 view name만 지정하고 끝
     }
 
-    @GetMapping("/read")
-    public void read(PageRequestDTO pageRequestDTO,long idx,Model model) {
+    @GetMapping({"/read","/update"})
+    public void read(PageRequestDTO pageRequestDTO, long idx, Model model) {
         Community community = service.read(idx);
         model.addAttribute("dto",community);
+        //요청이 /read 이면 뷰 리졸버가 read.html로 요청 전달
+        //요청이 /update 이면 뷰 리졸버가 update.html로 요청 전달
     }
 
-    @GetMapping("/update")
-    public void updateview(PageRequestDTO pageRequestDTO,long idx,Model model){
-        Community community = service.read(idx);
-        model.addAttribute("dto",community);
-    }
 
-    @PostMapping("/update")
-    public String update(long idx, String title,String content, String ip,String link,
-                         RedirectAttributes re){
-        Community dto = Community.builder()
-                .idx(idx)
-                .title(title)
-                .content(content)
-                .ip(ip)
-                .build();
-        log.info(">>>>>>>>>link : {}", link);
-        service.update(dto);
-        re.addFlashAttribute("message","글 수정이 완료되었습니다.");
-        return "redirect:/community/list?"+link;
+
+    @PostMapping("/update") //pageRequestDTO를 받아서 수정 후에도 검색이 유지되도록 함
+    public String update(PageRequestDTO pageRequestDTO, Community community
+    ,RedirectAttributes re){
+        String link = pageRequestDTO.getLink();
+        log.info(">>>>>>>>>community : {}", community);
+        service.update(community);
+        re.addFlashAttribute("result","글 수정이 완료되었습니다.");
+        re.addAttribute("idx",community.getIdx());
+        return "redirect:/community/read?"+link;
     }
 
     @PostMapping("/comments")
@@ -103,11 +99,12 @@ public class CommunityController {
         return "redirect:/community/read"; //리다이렉트 애트리뷰트 사용하므로 쿼리스트링 사용X
     }
 
-    @PostMapping("/delete")
-    public String delete(long idx,RedirectAttributes re){
+    @PostMapping("/delete") //pageRequestDTO를 받아서 수정 후에도 검색이 유지되도록 함
+    public String delete(PageRequestDTO pageRequestDTO, Long idx, RedirectAttributes re){
         service.delete(idx);
-        re.addFlashAttribute("message","글 삭제가 완료되었습니다.");
-        return "redirect:/community/list";
+        re.addFlashAttribute("result",
+                "글 삭제가 완료되었습니다.("+idx+"번)");
+        return "redirect:/community/list?"+pageRequestDTO.getLink();
     }
 
 }

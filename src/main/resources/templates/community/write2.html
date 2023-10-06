@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+</head>
+<body>
+<main id="write">
+    <h3>북챗 :: 커뮤니티</h3>
+    <p>오늘 무슨 책을 읽으셨나요?</p>
+    <hr style="color: white;">
+    <form name="frm1" method="post" action="write">
+        <input type="hidden" name="ip" th:value="${#request.remoteAddr}">
+        <table>
+            <tr>
+                <th class="title">제목</th>
+                <td><input type="text" name="title" size="50"></td>
+            </tr>
+            <!-- 작성자는 문제점을 발견하기 위한 추가 사항이고 나중에는 삭제합니다. -->
+            <tr>
+                <th>작성자</th>
+                <td><input type="text" name="writer" size="50"></td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td><textarea rows="30" cols="80" name="content"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button type="submit">저장</button>
+                    <button type="reset">다시쓰기</button>
+                    <button type="button" th:onclick="location.href='list'">목록</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</main>
+</body>
+</html>
